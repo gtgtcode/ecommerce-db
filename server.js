@@ -19,8 +19,8 @@ sequelize
   .then(() => {
     console.log("Database synced successfully");
     // Start the server
-    app.listen(3000, () => {
-      console.log("Server started on port 3000");
+    app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
     });
   })
   .catch((error) => {

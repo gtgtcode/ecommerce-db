@@ -27,6 +27,7 @@ router.get("/:id", (req, res) => {
 
 // create new product
 router.post("/", (req, res) => {
+  console.log("HELLO");
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -62,7 +63,7 @@ router.put("/:id", (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
-      id: req.params.id,
+      product_id: req.params.id,
     },
   })
     .then((product) => {
@@ -84,11 +85,11 @@ router.put("/:id", (req, res) => {
       // figure out which ones to remove
       const productTagsToRemove = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-        .map(({ id }) => id);
+        .map(({ product_id }) => product_id);
 
       // run both actions
       return Promise.all([
-        ProductTag.destroy({ where: { id: productTagsToRemove } }),
+        ProductTag.destroy({ where: { product_id: productTagsToRemove } }),
         ProductTag.bulkCreate(newProductTags),
       ]);
     })
@@ -101,6 +102,13 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   // delete one product by its `id` value
+  Product.destroy({ where: { product_id: req.params.id } })
+    .then((product) => {
+      res.json(product);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 module.exports = router;

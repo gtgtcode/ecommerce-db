@@ -25,16 +25,51 @@ router.get("/:id", (req, res) => {
   findOneCategory();
 });
 
+// create new category
 router.post("/", (req, res) => {
-  console.log("test");
+  /* req.body should look like this...
+    	{
+		    "category_name": "Fruits"
+	    }
+  */
+  Category.create(req.body)
+    .then((category) => {
+      // if there's category tags, we need to create pairings to bulk create in the ProductTag model
+      // if no category tags, just respond
+      res.status(200).json(category);
+    })
+    .then((categoryTagIds) => res.status(200).json(categoryTagIds))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json(err);
+    });
 });
 
+// update category
 router.put("/:id", (req, res) => {
-  // update a category by its `id` value
+  // update category data
+  Category.update(req.body, {
+    where: {
+      category_id: req.params.id,
+    },
+  })
+    .then((category) => {
+      res.json(category);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 router.delete("/:id", (req, res) => {
-  // delete a category by its `id` value
+  // delete one category by its `id` value
+  Category.destroy({ where: { category_id: req.params.id } })
+    .then((category) => {
+      res.json(category);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
 module.exports = router;
